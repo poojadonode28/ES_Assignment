@@ -1,0 +1,90 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2639
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww30040\viewh18900\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 Step 1:\
+\
+\
+PUT /products12\
+\{\
+  "settings": \{\
+    "analysis": \{\
+      "analyzer": \{\
+        "edge_ngram_analyzer": \{\
+          "type": "custom",\
+          "tokenizer": "edge_ngram_tokenizer"\
+        \}\
+      \},\
+      "tokenizer": \{\
+        "edge_ngram_tokenizer": \{\
+          "type": "edge_ngram",\
+          "min_gram": 2,\
+          "max_gram": 15,\
+          "token_chars": ["letter", "digit"]\
+        \}\
+      \}\
+    \}\
+  \},\
+  "mappings": \{\
+    "properties": \{\
+      "product_name": \{\
+        "type": "text",\
+        "analyzer": "edge_ngram_analyzer"\
+      \}\
+    \}\
+  \}\
+\}\
+\
+\
+\
+Step 2:\
+\
+\
+POST products12/_analyze\
+\{\
+  "analyzer":"edge_ngram_analyzer",\
+  "text":"Ela\'94\
+\}\
+\
+\
+Step 3:\
+\
+POST /products12/_bulk\
+\{ "index": \{\}\}\
+\{ "product_name": "Elasticsearch Book", "price": 30 \}\
+\{ "index": \{\}\}\
+\{ "product_name": "Elastic Shoes", "price": 75 \}\
+\{ "index": \{\}\}\
+\{ "product_name": "Elastic Headphones", "price": 50 \}\
+\
+\
+Step 4:\
+\
+\
+POST _reindex\
+\{\
+  "source": \{\
+    "index": "products"\
+  \},\
+  "dest": \{\
+    "index": "products1234"\
+  \}\
+\}\
+\
+\
+\
+Step 5:\
+\
+GET /products12/_search\
+\{\
+  "query":\{\
+    "match":\{\
+      "product_name":"Ela\'94\
+    \}\
+  \}\
+\}\
+\
+}
